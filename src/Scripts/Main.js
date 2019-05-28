@@ -1,4 +1,7 @@
 const parser = require("./InputParser");
+const revisionHelper = require("./Revision");
+const helper = require("./HelperFunctions");
+
 let beliefBase = []; //new Set();
 
 const connectives = {
@@ -13,14 +16,17 @@ nodeTypes = {
   CONNECTIVE: "CONNECTIVE", // V,Λ
   VARIABLE: "VARIABLE" //p,q,¬r
 };
-const input = "PΛQ";
+const input = "¬PVQ\nP"; //"(AVB)Λ(CVD)VF";
 ///"(AVB)Λ(CVD)VF"//"(AVB)Λ(CVD)VFVGΛH"; //"(AVB)Λ(DVE)ΛCVFVYVØΛWV(HVL)Λ(SVT)VP"; // "qV(pΛr)";
 //TODO: parsing issue. Can't parse "(QΛS)VS\n" + "¬(QΛS)VR";
 let testCount = 0;
 
 function negation(A) {
   //¬
-  return A.includes("¬") ? A.replace("¬", "") : "¬" + A;
+  if (A.length <= 2) {
+    return A.includes("¬") ? A.replace("¬", "") : "¬" + A;
+  }
+  return A;
 }
 class Node {
   // p,q,r
@@ -28,7 +34,13 @@ class Node {
     this.name = name; //name of the variable //e.g. p,q,r
     // this._id = _id; //unique id, (0,1,2,3,4..) ONLY SENTENCES HAVE IDs
     this.parent = parent; //TODO: make nested
-    this.children = children ? children : this.calculateChildren();
+    try {
+      this.children = children ? children : this.calculateChildren();
+    } catch (error) {
+      console.log("error:", error);
+
+      helper.printBelifeBase(beliefBase);
+    }
     this.nodeType = type ? type : this.getNodeType();
     // console.log("new node", this.nodeType);
     this.variableValue = this.getValue();
@@ -132,6 +144,7 @@ class Node {
     let result = [];
     let name = this.name;
     // console.log("name", name);
+
     if (
       !name.includes(["Λ"]) &&
       !name.includes(["V"]) &&
@@ -254,6 +267,14 @@ class Sentence {
   toString() {
     return this.syntaxTree.root.name;
   }
+  toSortedString() {
+    return this.syntaxTree.root.children.length === 1
+      ? this.syntaxTree.root.children[0].children
+          .map(c => c.name)
+          .sort()
+          .toString()
+      : this.toString();
+  }
 }
 class SyntaxTree {
   //syntaxTree
@@ -271,12 +292,17 @@ function checkIfPersistent(parsedSentence) {
   return true;
 }
 
-/**
+/** TODO: move tto Revision class or seperate belife base class.
  * this method adds newSentence and its entailments to a beliefBase
  * @param {*} beliefBase
  * @param {*} newSentence
  */
 function addSentence(beliefBase, newSentence) {
+  if (inBeliefBase(newSentence)) {
+    console.log("in belief base true");
+    return;
+  }
+  console.log("passed inbelief base");
   let newSentenceRoot = newSentence.syntaxTree.root;
   let bbSentenceRoot;
   let consequences = []; //string;
@@ -288,25 +314,69 @@ function addSentence(beliefBase, newSentence) {
     newSentenceRoot.children[0].name === connectives.CONJUCTION
   ) {
     newSentenceRoot.children[0].children.map(c => {
-      //   console.log('c',c)
+      //   console.log('c',c) [newsentenceString, [origins]];
       let sentenceToPush = [c.name, [newSentenceRoot.name]];
-      console.log("sentenceToPush", sentenceToPush);
-      console.log("inSyntaxTree", inBeliefBase(sentenceToPush));
+      //console.log("sentenceToPush", sentenceToPush);
+      // console.log("inSyntaxTree", inBeliefBase(sentenceToPush));
       consequences.push(sentenceToPush);
     });
   }
+  //console.log('newSentence',newSentence)
+
   beliefBase.forEach(s => {
     bbSentenceRoot = s.syntaxTree.root;
     //  console.log('s.syntaxTree.root',s.syntaxTree.root)
-    let isDisjunctions =
+    let bbDisjunctions =
       bbSentenceRoot &&
       bbSentenceRoot.children[0] &&
-      bbSentenceRoot.children[0].name === connectives.DISJUNCTION &&
+      bbSentenceRoot.children[0].name === connectives.DISJUNCTION;
+
+    let nsDisjunctions =
       newSentenceRoot &&
       newSentenceRoot.children[0] &&
-      newSentenceRoot.children[0].name === connectives.DISJUNCTION; // both sentence have a disjunction
+      newSentenceRoot.children[0].name === connectives.DISJUNCTION;
+
+    let isDisjunctions = bbDisjunctions && nsDisjunctions; // both sentence have a disjunction
 
     //SR1
+    if (bbDisjunctions || bbDisjunctions) {
+      //possible SR1
+
+      if (
+        nsDisjunctions &&
+        bbSentenceRoot &&
+        bbSentenceRoot.nodeType === nodeTypes.VARIABLE
+      ) {
+        //if new sentence is a disunction and n'th beliefbase sentence is a variable
+      } else if (
+        bbDisjunctions &&
+        newSentenceRoot &&
+        newSentenceRoot.nodeType === nodeTypes.VARIABLE
+      ) {
+        //if beliefbase sentence is a disunction and new sentence is a variable
+        let children = bbSentenceRoot.children[0].children.map(
+          node => node.name
+        );
+
+        var index = children.indexOf(negation(newSentenceRoot.name));
+        if (index > -1) {
+          //if new sentence is a child of the bb disjunction children(SR1 is possible)
+          children.splice(index, 1); //remove compared element from children(since it already exist)
+          children.forEach(newConsequence => {
+            console.log("newSentence to PUSH", [
+              newConsequence,
+              [newSentenceRoot.name, bbSentenceRoot.name]
+            ]);
+
+            consequences.push([
+              newConsequence,
+              [newSentenceRoot.name, bbSentenceRoot.name]
+            ]);
+          });
+        }
+      }
+    }
+
     //SR2
 
     //SR4
@@ -352,6 +422,7 @@ function addSentence(beliefBase, newSentence) {
   consequences.forEach(c => {
     console.log("adding consequence", c[0]);
     if (!inBeliefBase(c[0])) {
+      console.log("not on belife base", c[0], c[1]);
       updateBeliefBase(c[0], c[1]);
     }
   });
@@ -359,18 +430,31 @@ function addSentence(beliefBase, newSentence) {
 function parseSentence(inputString, origin) {
   return new Sentence(inputString, origin);
 }
+
 function inBeliefBase(sentence) {
-  //checks if a sentence already is in the belifbase
+  let parsedSentence =
+    typeof sentence === "string" ? parseSentence(sentence) : sentence;
+
+  let formatedInputSentence = "";
+  if (parsedSentence.syntaxTree.root.nodeType === nodeTypes.FORMULA) {
+    let sentenceChildren =
+      parsedSentence.syntaxTree.root.children.length > 0
+        ? parsedSentence.syntaxTree.root.children[0].children.map(c => c.name)
+        : [];
+
+    formatedInputSentence = sentenceChildren.sort().toString();
+  } else {
+    formatedInputSentence = parsedSentence.syntaxTree.root.name;
+  }
+
   let result = false;
-  beliefBase.forEach(b => {
-    console.log("b.toString()", b.toString());
-    if (b.toString() === sentence) {
-      console.log("IN BELIFEBASE TRUE!");
+  beliefBase.some(b => {
+    if (b.toSortedString() === formatedInputSentence) {
       result = true;
       return;
     }
   });
-  console.log("\nRESULT\n", result);
+
   return result;
 }
 function run() {
@@ -393,7 +477,11 @@ function updateBeliefBase(stringS, origin) {
     //  console.log('s',parsedSentence)
   }
 }
+
 run();
+helper.printBelifeBase(beliefBase);
+revisionHelper.checkConsistency(parseSentence("¬B", null), beliefBase);
+
 var fs = require("fs");
 function writeToJSON(data) {
   //console.log("data", data);
@@ -413,3 +501,9 @@ function writeToJSON(data) {
 let jsonfy = [...beliefBase];
 writeToJSON(jsonfy);
 //console.log('parsedSentence',parsedSentence)
+
+/*TODO: 
+We know that A -> B is equal to !A V B, which is equal to !B->!A
+// so if we also have A , we can derive B. Or if we have !B we can derive !A
+
+*/
