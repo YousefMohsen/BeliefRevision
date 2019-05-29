@@ -10,10 +10,10 @@ class Tools {
       console.log(b.toString());
     });
   }
-  printSentencee(sentence,st) {
+  printSentencee(sentence, st) {
     console.log("\n");
     st && console.log(st);
-    console.log("Printing seentence:", sentence.syntaxTree.root.name);
+    console.log("Printing seentence:", sentence.syntaxTree.name);
   }
   negation(A) {
     //¬

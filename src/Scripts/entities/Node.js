@@ -34,32 +34,9 @@ class Node {
     let isConuctionString = false;
 
     let nameToArray = [];
-    //console.log('input',input)
-
-    /*   if (Array.isArray(input) && containsConjuction) {
-        //  console.log('IS ARRAY')
-        
-          input.map((el,index)=>{
-              if(input[index]==='Λ' ){
-                  childrenStrings.push( '('+input[index-1]+')')
-                  childrenStrings.push( '('+input[index+1]+')')
-  
-              }
-          else if(!input[index-1]==='Λ' &&!input[index+1]==='Λ'){
-              if(el==='Λ'){
-                  containsConjuction
-              }
-              childrenStrings.push(el)
-          }
-          })
-  
-    } else {*/
-    // console.log('input',input)
     nameToArray = [...input];
-    //console.log('nameToArray',nameToArray)
 
     nameToArray.forEach((c, index) => {
-      // if(index===)
       if (!c.includes(")") && !c.includes("(")) {
         if (isMakingString) {
           currentChildString += c;
@@ -78,11 +55,6 @@ class Node {
         } else {
           isConuctionString = true;
           currentChildString += c;
-          /*
-              nameToArray[index+1] = c+nameToArray[index+1];
-              isMakingString = false;
-              childrenStrings.push(currentChildString);
-              currentChildString = "";*/
         }
       } else if (c.includes("(")) {
         isMakingString = true;
@@ -142,13 +114,9 @@ class Node {
             branch = { connective: str, children: [] };
             // add and reset
           } else {
-            // console.log('in else 146',str)
-
-            // console.log("");
             branch.connective = str;
           }
         } else {
-          //console.log('in else 150',str)
           if (!branch.connective) {
             branch.connective = str.includes("Λ") && str.length > 1 ? "Λ" : "V";
           }
@@ -195,10 +163,7 @@ class Node {
       //console.log("sortedBranches", sortedBranches);
 
       sortedBranches.children.forEach(child => {
-        //console.log('sortedBranches child',child)
         if (child.connective) {
-          //console.log('connective.child',child)
-
           child.children.forEach(c => {
             childNodes.push(new Node({ name: c, parent: child }));
           });
