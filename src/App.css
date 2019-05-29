@@ -68,6 +68,7 @@ color: #282c34;
   height: -webkit-fill-available;
   background-color: ghostwhite;
   max-width: -webkit-fill-available;
+  font-size: 1.5rem;
 }
 
 .right-panel{
