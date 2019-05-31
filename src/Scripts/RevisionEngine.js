@@ -5,7 +5,7 @@ import Constants from "./Tools/Constants";
 
 const nodeTypes = Constants.nodeTypes;
 const connectives = Constants.connectives;
-export default class RevisionHelper {
+class RevisionHelper {
   /**
 removes senttencee from a belifeset
 */
@@ -257,5 +257,6 @@ removes senttencee from a belifeset
     return beliefBase;
   }
 }
+export default new RevisionHelper();
 
 //module.exports = new RevisionHelper();

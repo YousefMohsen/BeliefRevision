@@ -1,5 +1,6 @@
-const Sentence = require("../entities/Sentence");
-export default class Tools {
+//const Sentence = require("../entities/Sentence");
+import Sentence from "../entities/Sentence";
+ class Tools {
   printBelifeBase(beliefBase, st) {
     console.log("\n");
     st && console.log(st);
@@ -37,4 +38,5 @@ export default class Tools {
     return -1;
   }
 }
+export default new Tools();
 //module.exports = new Tools();
