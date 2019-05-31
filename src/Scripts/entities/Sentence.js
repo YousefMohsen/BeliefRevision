@@ -1,5 +1,7 @@
-const Node = require("./Node");
-class Sentence {
+//const Node = require("./Node");
+import Node from './Node';
+
+export default class Sentence {
   //syntaxTree
   constructor(inputString, origin) {
     this.syntaxTree = this.constructSyntaxTree(inputString); //
@@ -24,4 +26,4 @@ class Sentence {
       : this.toString();
   }
 }
-module.exports = Sentence;
+//module.exports = Sentence;

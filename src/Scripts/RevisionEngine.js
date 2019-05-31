@@ -1,5 +1,8 @@
-const tools = require("./Tools/Tools");
-const Constants = require("./Tools/Constants");
+/*const tools = require("./Tools/Tools");
+const Constants = require("./Tools/Constants");*/
+import Tools from "./Tools/Tools";
+import Constants from "./Tools/Constants";
+
 const nodeTypes = Constants.nodeTypes;
 const connectives = Constants.connectives;
 export default class RevisionHelper {
@@ -64,7 +67,7 @@ removes senttencee from a belifeset
             node => node.name
           );
 
-          var index = children.indexOf(tools.negation(newSentenceRoot.name));
+          var index = children.indexOf(Tools.negation(newSentenceRoot.name));
           if (index > -1) {
             //if new sentence is a child of the bb disjunction children(SR1 is possible)
             children.splice(index, 1); //remove compared element from children(since it already exist)
@@ -101,7 +104,7 @@ removes senttencee from a belifeset
         bbSentenceRoot.children[0].children.map((bbChild, i) => {
           //if(negation of child in other sentence children, add other child of this and other child of that intot new sentence)
           newSentenceRoot.children[0].children.map((nsChild, k) => {
-            if (tools.negation(bbChild.name) == nsChild.name) {
+            if (Tools.negation(bbChild.name) == nsChild.name) {
               let newConsequence =
                 bbSentenceRoot.children[0].children[i === 0 ? 1 : 0].name +
                 connectives.DISJUNCTION +
@@ -125,14 +128,14 @@ removes senttencee from a belifeset
 
   contract(sentence, beliefeSet) {
     //First remove sentence from belifeSet
-    var index = tools.getIndexByName(sentence, beliefeSet);
+    var index = Tools.getIndexByName(sentence, beliefeSet);
     if (index > -1) {
       beliefeSet.splice(index, 1);
       //map belifeSet and remove and cn of sentence
       beliefeSet.forEach(b => {
         let i = b.origin ? b.origin.indexOf(sentence.toString()) : -1;
         if (i > -1) {
-          let sentenceIndex = tools.getIndexByName(b.toString(), beliefeSet); // index in database of a sentence s that is implied by sentence
+          let sentenceIndex = Tools.getIndexByName(b.toString(), beliefeSet); // index in database of a sentence s that is implied by sentence
           if (sentenceIndex > -1) {
             this.contract(b.toString(), beliefeSet);
           }
@@ -153,7 +156,7 @@ removes senttencee from a belifeset
   resolution(sOne, sTwo) {
     let sOneName = sOne.toString();
     let sTwoName = sTwo.toString();
-    if (tools.negation(sOneName) === sTwoName) {
+    if (Tools.negation(sOneName) === sTwoName) {
       return true;
     }
     return false;
@@ -211,7 +214,7 @@ removes senttencee from a belifeset
   inBeliefBase(sentence, beliefBase) {
     let result = false;
     let parsedSentence =
-      typeof sentence === "string" ? tools.parseSentence(sentence) : sentence;
+      typeof sentence === "string" ? Tools.parseSentence(sentence) : sentence;
     let formatedInputSentence = "";
     if (parsedSentence.syntaxTree.nodeType === nodeTypes.FORMULA) {
       let sentenceChildren =
@@ -236,7 +239,7 @@ removes senttencee from a belifeset
 
   updateBeliefBase(stringSentence, origin, beliefBase) {
     // parse sttring into a syntactic treee( Sentence object)
-    let parsedSentence = tools.parseSentence(stringSentence, origin);
+    let parsedSentence = Tools.parseSentence(stringSentence, origin);
 
     //check if the sentence is consistent with the belief base
     let isConsistent = this.checkConsistency(parsedSentence, beliefBase);

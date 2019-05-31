@@ -1,4 +1,4 @@
-class InputParser {
+export default class InputParser {
 
 
     parse(input){
@@ -81,7 +81,7 @@ InputParser.connectives = {
     IMPLICATION: "->",
     BICONDITION: "<->"
   };
-module.exports = new InputParser();
+//module.exports = new InputParser();
 
 
 //truthTable();

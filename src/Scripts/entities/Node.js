@@ -1,6 +1,7 @@
-const Constants = require("../Tools/Constants");
+//const Constants = require("../Tools/Constants");
+import Constants from "../Tools/Constants";
 const nodeTypes = Constants.nodeTypes;
-class Node {
+export default class Node {
   // p,q,r
   constructor({ name, parent, type, children }) {
     this.name = name; //name of the variable //e.g. p,q,r
@@ -195,4 +196,4 @@ class Node {
   }
 }
 
-module.exports = Node;
+//module.exports = Node;

@@ -1,5 +1,5 @@
 const Sentence = require("../entities/Sentence");
-class Tools {
+export default class Tools {
   printBelifeBase(beliefBase, st) {
     console.log("\n");
     st && console.log(st);
@@ -37,4 +37,4 @@ class Tools {
     return -1;
   }
 }
-module.exports = new Tools();
+//module.exports = new Tools();

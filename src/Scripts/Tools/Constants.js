@@ -14,4 +14,5 @@ const Constants = {
   connectives,
   nodeTypes
 };
-module.exports = Constants;
+//module.exports = Constants;
+export default Constants;
