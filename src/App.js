@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import engine from "./Scripts/RevisionEngine";
+import RevisionHelper from "./Scripts/RevisionEngine";
 class App extends React.Component {
   constructor() {
     super();
@@ -17,7 +17,7 @@ class App extends React.Component {
     let newBeliefs = this.state.input.trim().split("\n");
     let newBelieefToAdd = newBeliefs[0];
     if (newBelieefToAdd) {
-      let newBB = engine.updateBeliefBase(newBelieefToAdd, null, beliefBase);
+      let newBB = RevisionHelper.updateBeliefBase(newBelieefToAdd, null, beliefBase);
       console.log("newBB", newBB);
       newBeliefs.splice(0, 1); //remove the added belief from texarea
       this.setState({ input: newBeliefs.join("\n"), beliefBase: newBB });

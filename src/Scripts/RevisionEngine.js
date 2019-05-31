@@ -2,7 +2,7 @@ const tools = require("./Tools/Tools");
 const Constants = require("./Tools/Constants");
 const nodeTypes = Constants.nodeTypes;
 const connectives = Constants.connectives;
-class RevisionHelper {
+export default class RevisionHelper {
   /**
 removes senttencee from a belifeset
 */
@@ -255,4 +255,4 @@ removes senttencee from a belifeset
   }
 }
 
-module.exports = new RevisionHelper();
+//module.exports = new RevisionHelper();

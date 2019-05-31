@@ -1,8 +1,9 @@
-const revisionHelper = require("./RevisionEngine");
+/*const revisionHelper = require("./RevisionEngine");
 const tools = require("./Tools/Tools");
 /**
  * TO run this file type "node Main.js"
  */
+/*
 let beliefBase = [];
 const input = "¬PVQ\nP\n¬Q";
 
@@ -34,3 +35,4 @@ function writeToJSON(data) {
 }
 let jsonfy = [...beliefBase];
 writeToJSON(jsonfy);
+*/
